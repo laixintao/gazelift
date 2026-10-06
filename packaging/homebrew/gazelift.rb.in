@@ -1,0 +1,23 @@
+cask "gazelift" do
+  version "@VERSION@"
+  sha256 "@SHA256@"
+
+  url "https://github.com/laixintao/gazelift/releases/download/v#{version}/GazeLift-#{version}-macos-universal.dmg"
+  name "GazeLift"
+  desc "Look-away reminders with expanding screen borders"
+  homepage "https://github.com/laixintao/gazelift"
+
+  depends_on macos: :sonoma
+
+  app "GazeLift.app"
+
+  uninstall quit: "io.xbin.gazelift"
+
+  zap trash: "~/Library/Preferences/io.xbin.gazelift.plist"
+
+  caveats <<~EOS
+    GazeLift is not signed with an Apple Developer ID or notarized by Apple.
+    If macOS blocks the first launch, follow Apple's instructions:
+      https://support.apple.com/en-us/102445
+  EOS
+end

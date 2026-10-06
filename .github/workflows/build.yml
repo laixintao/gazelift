@@ -1,0 +1,71 @@
+name: Build and test macOS
+on:
+  workflow_call:
+    inputs:
+      ref:
+        type: string
+        required: false
+        default: ''
+permissions:
+  contents: read
+jobs:
+  lint:
+    runs-on: macos-15
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref }}
+          persist-credentials: false
+      - run: brew install shellcheck actionlint
+      - run: |
+          shellcheck scripts/*.sh
+          actionlint
+  build:
+    needs: lint
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref }}
+          persist-credentials: false
+      - run: make ci-package
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: macos-universal
+          path: dist/releases/*
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: native-ui-arm64
+          path: build/qa/*.png
+          if-no-files-found: ignore
+          retention-days: 7
+  intel:
+    needs: build
+    runs-on: macos-15-intel
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref }}
+          persist-credentials: false
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: macos-universal
+          path: dist/releases
+      - name: Native tests and the exact distributed Intel executable
+        run: |
+          make test
+          make release-verify
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: native-ui-intel
+          path: build/qa/*.png
+          if-no-files-found: ignore
+          retention-days: 7

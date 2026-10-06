@@ -1,0 +1,13 @@
+{
+  "gazelift": {
+    "repository": "laixintao/gazelift",
+    "include_prereleases": false,
+    "assets": {
+      "universal": "GazeLift-{version}-macos-universal.dmg"
+    },
+    "checksums": "SHA256SUMS",
+    "cask": {
+      "url": "https://github.com/laixintao/gazelift/releases/download/v#{version}/GazeLift-#{version}-macos-universal.dmg"
+    }
+  }
+}

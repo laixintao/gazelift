@@ -57,7 +57,7 @@ Download `GazeLift-<version>-macos-universal.dmg` from
 [Releases](https://github.com/laixintao/gazelift/releases), open it, and drag
 GazeLift to Applications. The matching ZIP contains the same universal app.
 
-Homebrew onboarding is pending. After onboarding to the tap:
+Install with Homebrew, or update an existing installation:
 
 ```sh
 brew install --cask laixintao/tap/gazelift
